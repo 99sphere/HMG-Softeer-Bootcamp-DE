@@ -8,7 +8,7 @@
 - Pandas의 visualize 기능은 matplotlib 기반으로 구현됨 
 
 ### Intro to SQL
-- TBD
+- SQL의 종류에 따라 command에 차이가 있다.
   
 ### ETL(Extract, Transform and Loading)
 
