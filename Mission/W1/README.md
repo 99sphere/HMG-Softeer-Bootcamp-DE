@@ -67,13 +67,6 @@ jupyter kernelspec uninstall {jupyter kernel name}
   - 공식적으로 제공하는 API가 있는 지 확인, 없으면 똑같은 방식으로 crawling.
 - (world economy) 데이터가 갱신된다면, 과거의 데이터는?
   - 데이터베이스에 저장할 때 갱신하는 날짜를 같이 저장해서 구분할 수 있도록 한다.
-=======
-## Wiki
-### venv with Jupyter
-- reference: https://raki-1203.github.io/jupyter/JupyterLab_venv_add_delete/
-### Intro to Pandas with Matplotlib
-- Method: head, tail, corr, hist, etc...
-- Pandas의 visualize 기능은 matplotlib 기반으로 구현됨
 ### Intro to SQL
 - SQL의 종류에 따라 command에 차이가 있다.
 ### ETL(Extract, Transform and Loading)
