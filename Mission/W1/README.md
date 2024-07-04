@@ -66,4 +66,4 @@ jupyter kernelspec uninstall {jupyter kernel name}
 - (world economy) wikipedia 대신, 직접 데이터를 얻으려면?
   - 공식적으로 제공하는 API가 있는 지 확인, 없으면 똑같은 방식으로 crawling.
 - (world economy) 데이터가 갱신된다면, 과거의 데이터는?
-  - 데이터베이스에 저장할 때 갱신하는 날짜를 같이 저장해서 구분할 수 있도록 한다.
+  - 데이터베이스에 저장할 때 갱신하는 날짜를 새로운 column에 저장해서 구분할 수 있도록 한다.
