@@ -17,7 +17,7 @@ REGION_INFO_NAME = "region_infos.json"
 def logger(msg):
     with open(PATH+LOG_NAME, 'a') as f:
         time = datetime.now()
-        time_str = f"{time.year}-{time.strftime("%B")}-{time.day}-{time.hour}-{time.second}"
+        time_str = f"{time.year}-{time.strftime("%B")}-{time.day:02d}-{time.hour:02d}-{time.second:02d}"
         f.write(time_str+', '+msg+'\n')
     return 
     
