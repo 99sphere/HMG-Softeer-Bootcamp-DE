@@ -30,7 +30,7 @@ def logger(msg: str):
     return 
     
     
-def extract():
+def extract()->pd.DataFrame:
     """_summary_
     Extract GDP info from "https://en.wikipedia.org/wiki/List_of_countries_by_GDP_%28nominal%29"
     and save into json file.
@@ -54,7 +54,7 @@ def extract():
     return tables_df
 
 
-def transform(tables_df: pd.DataFrame):
+def transform(tables_df: pd.DataFrame)->pd.DataFrame:
     """_summary_
     Transform raw data to target data. 
     1. Add region info
