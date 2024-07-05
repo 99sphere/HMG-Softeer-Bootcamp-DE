@@ -10,36 +10,41 @@ from io import StringIO
 import sqlite3 as sq3
 import csv
 
-def logger(msg, log_fp):
-    with open(log_fp, 'a') as f:
+URL = "https://en.wikipedia.org/wiki/List_of_countries_by_GDP_%28nominal%29"
+PATH = "assets/"
+LOG_NAME = 'etl_project_log.txt'
+JSON_NAME = "Countries_by_GDP.json"
+REGION_INFO_NAME = "region_infos.json"
+
+def logger(msg):
+    with open(PATH+LOG_NAME, 'a') as f:
         time = datetime.now()
         time_str = f"{time.year}-{time.strftime("%B")}-{time.day}-{time.hour}-{time.second}"
         f.write(time_str+', '+msg+'\n')
-        
-    return None
+    return 
     
-def extract(url, log_fp):
-    """
-    Extract GDP info from "https://en.wikipedia.org/wiki/List_of_countries_by_GDP_%28nominal%29"
-    and save into json file.
-    """
-    logger("Extracting Start.", log_fp)
+    
+def extract():
+    logger("Extracting Start.")
     
     # Get raw data
-    response = requests.get(url)
+    response = requests.get(URL)
     html = response.text
     soup = BeautifulSoup(html, 'html.parser')
     raw_data = soup.select('table')
 
-    logger("Extracting Done", log_fp)
-        
-    return raw_data
-
-def transform(raw_data, log_fp):
-    logger("Transform Start.", log_fp)
-    
     # Transform raw data to pandas dataFrame
     table_df_list = pd.read_html(StringIO(str(raw_data)))
+    tables_df = table_df_list[2]
+
+    logger("Extracting Done")
+    return raw_data
+
+def transform(tables_df):
+    logger("Transform Start.")
+    
+    # Transform raw data to pandas dataFrame
+    table_df_list = pd.read_html(StringIO(str(tables_df)))
     tables_df = table_df_list[2]
     
     df_country = tables_df['Country/Territory'].copy()
@@ -70,15 +75,9 @@ def transform(raw_data, log_fp):
     data = data.sort_values(by=['Forecast', "Country/Territory"], ascending=[False, True])
 
     # Add column for region info
-    continent_countries = {
-        "Asia": ["East Timor", "Macau", "Afghanistan", "Armenia", "Azerbaijan", "Bahrain", "Bangladesh", "Bhutan", "Brunei", "Cambodia", "China", "Cyprus", "Georgia", "India", "Indonesia", "Iran", "Iraq", "Israel", "Japan", "Jordan", "Kazakhstan", "Kuwait", "Kyrgyzstan", "Laos", "Lebanon", "Malaysia", "Maldives", "Mongolia", "Myanmar", "Nepal", "North Korea", "Oman", "Pakistan", "Palestine", "Philippines", "Qatar", "Saudi Arabia", "Singapore", "South Korea", "Sri Lanka", "Syria", "Taiwan", "Tajikistan", "Thailand", "Timor-Leste", "Turkey", "Turkmenistan", "United Arab Emirates", "Uzbekistan", "Vietnam", "Yemen", "Hong Kong"],
-        "North America": ["Turks and Caicos Islands", "Sint Maarten ", "Montserrat", "Greenland", "Curaçao", "Cayman Islands", "British Virgin Islands", "Bermuda", "Anguilla", "Puerto Rico", "Antigua and Barbuda", "Bahamas", "Barbados", "Belize", "Canada", "Costa Rica", "Cuba", "Dominica", "Dominican Republic", "El Salvador", "Grenada", "Guatemala", "Haiti", "Honduras", "Jamaica", "Mexico", "Nicaragua", "Panama", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines", "Trinidad and Tobago", "United States"],
-        "Europe": ["Albania", "Andorra", "Armenia", "Austria", "Azerbaijan", "Belarus", "Belgium", "Bosnia and Herzegovina", "Bulgaria", "Croatia", "Cyprus", "Czech Republic", "Denmark", "Estonia", "Finland", "France", "Georgia", "Germany", "Greece", "Hungary", "Iceland", "Ireland", "Italy", "Kazakhstan", "Kosovo", "Latvia", "Liechtenstein", "Lithuania", "Luxembourg", "Malta", "Moldova", "Monaco", "Montenegro", "Netherlands", "North Macedonia", "Norway", "Poland", "Portugal", "Romania", "Russia", "San Marino", "Serbia", "Slovakia", "Slovenia", "Spain", "Sweden", "Switzerland", "Turkey", "Ukraine", "United Kingdom", "Vatican City"],
-        "South America": ["Aruba", "Argentina", "Bolivia", "Brazil", "Chile", "Colombia", "Ecuador", "Guyana", "Paraguay", "Peru", "Suriname", "Uruguay", "Venezuela"],
-        "Africa": ["Zanzibar", "São Tomé and Príncipe", "Cape Verde", "DR Congo", "Algeria", "Angola", "Benin", "Botswana", "Burkina Faso", "Burundi", "Cabo Verde", "Cameroon", "Central African Republic", "Chad", "Comoros", "Congo", "Djibouti", "Egypt", "Equatorial Guinea", "Eritrea", "Eswatini", "Ethiopia", "Gabon", "Gambia", "Ghana", "Guinea", "Guinea-Bissau", "Ivory Coast", "Kenya", "Lesotho", "Liberia", "Libya", "Madagascar", "Malawi", "Mali", "Mauritania", "Mauritius", "Morocco", "Mozambique", "Namibia", "Niger", "Nigeria", "Rwanda", "Sao Tome and Principe", "Senegal", "Seychelles", "Sierra Leone", "Somalia", "South Africa", "South Sudan", "Sudan", "Tanzania", "Togo", "Tunisia", "Uganda", "Zambia", "Zimbabwe"],
-        "Oceania": ["New Caledonia", "French Polynesia", "Cook Islands", "Australia", "Fiji", "Kiribati", "Marshall Islands", "Micronesia", "Nauru", "New Zealand", "Palau", "Papua New Guinea", "Samoa", "Solomon Islands", "Tonga", "Tuvalu", "Vanuatu"]
-    }
-    
+    with open("assets/region_infos.json", "r") as region_infos_json:
+        continent_countries = json.load(region_infos_json)
+        
     all_nations_list = list(data['Country/Territory'])
     regions = []
     
@@ -91,25 +90,22 @@ def transform(raw_data, log_fp):
                 break
         if not find:
             regions.append("None")
-
     data['Region']=regions
     
-    logger("Transform Done.", log_fp)
+    logger("Transform Done.")
     return data
 
-def load(data, log_fp, con):
-    logger("Loading Start.", log_fp)
+def load(data, con):
+    logger("Loading Start.")
 
     # Save in json file.
-    dir, _ = os.path.split(log_fp)
-    json_fn = "Countries_by_GDP.json"
-    json_fp = os.path.join(dir, json_fn)
-    data.to_json(json_fp)
+    data.to_json(PATH+JSON_NAME, orient='columns')
     
     # Save in sqlite3 DB
     data_sql = data[['Country/Territory', 'Forecast', 'Region']].copy().rename(columns={'Country/Territory':'Country', 'Forecast':'GDP_USD_billion'})
     data_sql.to_sql('Countries_by_GDP', con, if_exists='replace')   
-    logger("Loading Done.", log_fp)    
+    
+    logger("Loading Done.")    
     return 
 
 if __name__=="__main__":
@@ -134,24 +130,24 @@ if __name__=="__main__":
         f.close() 
 
     # Run ETL Process
-    raw_data = extract(url, log_fp=file_path)
-    data = transform(raw_data, log_fp=file_path)
-    load(data, log_fp=file_path, con=con)
+    tables_df = extract()
+    data = transform(tables_df)
+    load(data, con=con)
     
     # Requirements 1 (with SQL query)
     query = "SELECT Country FROM Countries_by_GDP WHERE GDP_USD_billion > 100"
     print(con.execute(query).fetchall())
     
     # Requirements 2 (with SQL query)
-    query = "SELECT Region, ROUND(AVG(GDP_USD_billion),2)  FROM ( SELECT * FROM Countries_by_GDP  WHERE Region='Asia' ORDER BY GDP_USD_billion DESC  LIMIT 5 )"
+    query = "SELECT Region, ROUND(AVG(GDP_USD_billion), 2)  FROM ( SELECT * FROM Countries_by_GDP  WHERE Region='Asia' ORDER BY GDP_USD_billion DESC  LIMIT 5 )"
     print(con.execute(query).fetchall())
-    query = "SELECT Region, ROUND(AVG(GDP_USD_billion),2)  FROM ( SELECT * FROM Countries_by_GDP  WHERE Region='North America' ORDER BY GDP_USD_billion DESC  LIMIT 5 )"
+    query = "SELECT Region, ROUND(AVG(GDP_USD_billion), 2)  FROM ( SELECT * FROM Countries_by_GDP  WHERE Region='North America' ORDER BY GDP_USD_billion DESC  LIMIT 5 )"
     print(con.execute(query).fetchall())
-    query = "SELECT Region, ROUND(AVG(GDP_USD_billion) 2) FROM ( SELECT * FROM Countries_by_GDP  WHERE Region='Europe' ORDER BY GDP_USD_billion DESC  LIMIT 5 )"
+    query = "SELECT Region, ROUND(AVG(GDP_USD_billion), 2) FROM ( SELECT * FROM Countries_by_GDP  WHERE Region='Europe' ORDER BY GDP_USD_billion DESC  LIMIT 5 )"
     print(con.execute(query).fetchall())
-    query = "SELECT Region, ROUND(AVG(GDP_USD_billion),2)  FROM ( SELECT * FROM Countries_by_GDP  WHERE Region='South America' ORDER BY GDP_USD_billion DESC  LIMIT 5 )"
+    query = "SELECT Region, ROUND(AVG(GDP_USD_billion), 2)  FROM ( SELECT * FROM Countries_by_GDP  WHERE Region='South America' ORDER BY GDP_USD_billion DESC  LIMIT 5 )"
     print(con.execute(query).fetchall())
-    query = "SELECT Region, ROUND(AVG(GDP_USD_billion),2)  FROM ( SELECT * FROM Countries_by_GDP  WHERE Region='Africa' ORDER BY GDP_USD_billion DESC  LIMIT 5 )"
+    query = "SELECT Region, ROUND(AVG(GDP_USD_billion), 2)  FROM ( SELECT * FROM Countries_by_GDP  WHERE Region='Africa' ORDER BY GDP_USD_billion DESC  LIMIT 5 )"
     print(con.execute(query).fetchall())
-    query = "SELECT Region, ROUND(AVG(GDP_USD_billion),2)  FROM ( SELECT * FROM Countries_by_GDP  WHERE Region='Oceania' ORDER BY GDP_USD_billion DESC  LIMIT 5 )"
+    query = "SELECT Region, ROUND(AVG(GDP_USD_billion), 2)  FROM ( SELECT * FROM Countries_by_GDP  WHERE Region='Oceania' ORDER BY GDP_USD_billion DESC  LIMIT 5 )"
     print(con.execute(query).fetchall())
