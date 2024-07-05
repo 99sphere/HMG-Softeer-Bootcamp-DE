@@ -181,6 +181,5 @@ if __name__=="__main__":
     print(con.execute(query).fetchall())
     query = "SELECT Region, ROUND(AVG(GDP_USD_billion), 2)  FROM ( SELECT * FROM Countries_by_GDP  WHERE Region='Oceania' ORDER BY GDP_USD_billion DESC  LIMIT 5 )"
     print(con.execute(query).fetchall())
-    
     con.commit()
     con.close()
