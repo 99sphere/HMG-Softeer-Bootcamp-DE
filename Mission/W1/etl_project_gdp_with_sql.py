@@ -16,7 +16,13 @@ LOG_NAME = 'etl_project_log.txt'
 JSON_NAME = "Countries_by_GDP.json"
 REGION_INFO_NAME = "region_infos.json"
 
-def logger(msg):
+def logger(msg: str):
+    """_summary_
+
+    Args:
+        msg (str): msg for logging
+    """
+
     with open(PATH+LOG_NAME, 'a') as f:
         time = datetime.now()
         time_str = f"{time.year}-{time.strftime("%B")}-{time.day:02d}-{time.hour:02d}-{time.second:02d}"
@@ -25,6 +31,13 @@ def logger(msg):
     
     
 def extract():
+    """_summary_
+    Extract GDP info from "https://en.wikipedia.org/wiki/List_of_countries_by_GDP_%28nominal%29"
+    and save into json file.
+
+    Returns:
+        tables_df (raw data about GDP per country)
+    """
     logger("Extracting Start.")
     
     # Get raw data
@@ -38,18 +51,27 @@ def extract():
     tables_df = table_df_list[2]
 
     logger("Extracting Done")
-    return raw_data
+    return tables_df
 
-def transform(tables_df):
+
+def transform(tables_df: pd.DataFrame):
+    """_summary_
+    Transform raw data to target data. 
+    1. Add region info
+    2. Change GDP Unit (million dollars to billion dollars)
+    3. Change '-' to np.nan in 'Forecast' column. 
+    
+    Args:
+        tables_df (pd.DataFrame): raw data about GDP per country
+
+    Returns:
+        data (pd.DataFrame): transformed data.
+    """
     logger("Transform Start.")
-    
-    # Transform raw data to pandas dataFrame
-    table_df_list = pd.read_html(StringIO(str(tables_df)))
-    tables_df = table_df_list[2]
-    
+     
     df_country = tables_df['Country/Territory'].copy()
     
-    # Remove [%], and calc million to billion
+    # Convert '-' to np.nan and remove '[%]'. 
     df_IMF_Year =  tables_df['IMF[1][13]']['Year'].copy()
     is_num = np.array((df_IMF_Year.str.isnumeric()))
     not_num_idx = np.where(is_num==False)[0].tolist()
@@ -60,7 +82,7 @@ def transform(tables_df):
         else:
             df_IMF_Year[idx] = np.nan
 
-    # Remove [%], and calc million to billion
+    # Calc million to billion
     df_IMF_Forecast =  tables_df['IMF[1][13]']['Forecast'].copy()
     is_num = np.array((df_IMF_Forecast.str.isnumeric()))
     not_num_idx = np.where(is_num==False)[0].tolist()
@@ -75,7 +97,7 @@ def transform(tables_df):
     data = data.sort_values(by=['Forecast', "Country/Territory"], ascending=[False, True])
 
     # Add column for region info
-    with open("assets/region_infos.json", "r") as region_infos_json:
+    with open(PATH+REGION_INFO_NAME, "r") as region_infos_json:
         continent_countries = json.load(region_infos_json)
         
     all_nations_list = list(data['Country/Territory'])
@@ -95,7 +117,15 @@ def transform(tables_df):
     logger("Transform Done.")
     return data
 
+
 def load(data, con):
+    """_summary_
+    Save transformed data in json file and sqlite3 DB.
+    
+    Args:
+        data (pd.DataFrame): transformed data
+    """
+
     logger("Loading Start.")
 
     # Save in json file.
@@ -108,13 +138,13 @@ def load(data, con):
     logger("Loading Done.")    
     return 
 
+
 if __name__=="__main__":
     url = "https://en.wikipedia.org/wiki/List_of_countries_by_GDP_%28nominal%29"
     path = "assets/"
     filename = 'etl_project_log.txt'
     file_path = path + filename
     
-    # con.close()
     con = sq3.connect('./assets/World_Economies.db')
     cursor = con.cursor()
 
@@ -151,3 +181,6 @@ if __name__=="__main__":
     print(con.execute(query).fetchall())
     query = "SELECT Region, ROUND(AVG(GDP_USD_billion), 2)  FROM ( SELECT * FROM Countries_by_GDP  WHERE Region='Oceania' ORDER BY GDP_USD_billion DESC  LIMIT 5 )"
     print(con.execute(query).fetchall())
+    
+    con.commit()
+    con.close()
