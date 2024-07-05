@@ -8,39 +8,67 @@ from datetime import datetime
 import os.path
 from io import StringIO
 
-def logger(msg, log_fp):
-    with open(log_fp, 'a') as f:
+URL = "https://en.wikipedia.org/wiki/List_of_countries_by_GDP_%28nominal%29"
+PATH = "assets/"
+LOG_NAME = 'etl_project_log.txt'
+JSON_NAME = "Countries_by_GDP.json"
+REGION_INFO_NAME = "region_infos.json"
+
+def logger(msg: str):
+    """_summary_
+
+    Args:
+        msg (str): msg for logging
+    """
+    with open(PATH+LOG_NAME, 'a') as f:
         time = datetime.now()
-        time_str = f"{time.year}-{time.strftime("%B")}-{time.day}-{time.hour}-{time.second}"
+        time_str = f"{time.year}-{time.strftime("%B")}-{time.day:02d}-{time.hour:02d}-{time.second:02d}"
         f.write(time_str+', '+msg+'\n')
     return 
     
-def extract(url, log_fp):
-    """
+    
+def extract()->pd.DataFrame:
+    """_summary_
     Extract GDP info from "https://en.wikipedia.org/wiki/List_of_countries_by_GDP_%28nominal%29"
     and save into json file.
+
+    Returns:
+        tables_df (raw data about GDP per country)
     """
-    logger("Extracting Start.", log_fp)
+    logger("Extracting Start.")
     
     # Get raw data
-    response = requests.get(url)
+    response = requests.get(URL)
     html = response.text
     soup = BeautifulSoup(html, 'html.parser')
     raw_data = soup.select('table')
 
-    logger("Extracting Done", log_fp)
-    return raw_data
-
-def transform(raw_data, log_fp):
-    logger("Transform Start.", log_fp)
-    
     # Transform raw data to pandas dataFrame
     table_df_list = pd.read_html(StringIO(str(raw_data)))
     tables_df = table_df_list[2]
+
+    logger("Extracting Done")
+    return tables_df
+
+
+def transform(tables_df: pd.DataFrame)->pd.DataFrame: 
+    """_summary_
+    Transform raw data to target data. 
+    1. Add region info
+    2. Change GDP Unit (million dollars to billion dollars)
+    3. Change '-' to np.nan in 'Forecast' column. 
+    
+    Args:
+        tables_df (pd.DataFrame): raw data about GDP per country
+
+    Returns:
+        data (pd.DataFrame): transformed data.
+    """
+    logger("Transform Start.")
     
     df_country = tables_df['Country/Territory'].copy()
     
-    # Convert '-' to np.nan
+    # Convert '-' to np.nan and remove '[%]'. 
     df_IMF_Year =  tables_df['IMF[1][13]']['Year'].copy()
     is_num = np.array((df_IMF_Year.str.isnumeric()))
     not_num_idx = np.where(is_num==False)[0].tolist()
@@ -51,7 +79,7 @@ def transform(raw_data, log_fp):
         else:
             df_IMF_Year[idx] = np.nan
 
-    # Remove [%], and calc million to billion
+    # Calc million to billion
     df_IMF_Forecast =  tables_df['IMF[1][13]']['Forecast'].copy()
     is_num = np.array((df_IMF_Forecast.str.isnumeric()))
     not_num_idx = np.where(is_num==False)[0].tolist()
@@ -66,15 +94,9 @@ def transform(raw_data, log_fp):
     data = data.sort_values(by=['Forecast', "Country/Territory"], ascending=[False, True])
 
     # Add column for region info
-    continent_countries = {
-        "Asia": ["East Timor", "Macau", "Afghanistan", "Armenia", "Azerbaijan", "Bahrain", "Bangladesh", "Bhutan", "Brunei", "Cambodia", "China", "Cyprus", "Georgia", "India", "Indonesia", "Iran", "Iraq", "Israel", "Japan", "Jordan", "Kazakhstan", "Kuwait", "Kyrgyzstan", "Laos", "Lebanon", "Malaysia", "Maldives", "Mongolia", "Myanmar", "Nepal", "North Korea", "Oman", "Pakistan", "Palestine", "Philippines", "Qatar", "Saudi Arabia", "Singapore", "South Korea", "Sri Lanka", "Syria", "Taiwan", "Tajikistan", "Thailand", "Timor-Leste", "Turkey", "Turkmenistan", "United Arab Emirates", "Uzbekistan", "Vietnam", "Yemen", "Hong Kong"],
-        "North America": ["Turks and Caicos Islands", "Sint Maarten ", "Montserrat", "Greenland", "Curaçao", "Cayman Islands", "British Virgin Islands", "Bermuda", "Anguilla", "Puerto Rico", "Antigua and Barbuda", "Bahamas", "Barbados", "Belize", "Canada", "Costa Rica", "Cuba", "Dominica", "Dominican Republic", "El Salvador", "Grenada", "Guatemala", "Haiti", "Honduras", "Jamaica", "Mexico", "Nicaragua", "Panama", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines", "Trinidad and Tobago", "United States"],
-        "Europe": ["Albania", "Andorra", "Armenia", "Austria", "Azerbaijan", "Belarus", "Belgium", "Bosnia and Herzegovina", "Bulgaria", "Croatia", "Cyprus", "Czech Republic", "Denmark", "Estonia", "Finland", "France", "Georgia", "Germany", "Greece", "Hungary", "Iceland", "Ireland", "Italy", "Kazakhstan", "Kosovo", "Latvia", "Liechtenstein", "Lithuania", "Luxembourg", "Malta", "Moldova", "Monaco", "Montenegro", "Netherlands", "North Macedonia", "Norway", "Poland", "Portugal", "Romania", "Russia", "San Marino", "Serbia", "Slovakia", "Slovenia", "Spain", "Sweden", "Switzerland", "Turkey", "Ukraine", "United Kingdom", "Vatican City"],
-        "South America": ["Aruba", "Argentina", "Bolivia", "Brazil", "Chile", "Colombia", "Ecuador", "Guyana", "Paraguay", "Peru", "Suriname", "Uruguay", "Venezuela"],
-        "Africa": ["Zanzibar", "São Tomé and Príncipe", "Cape Verde", "DR Congo", "Algeria", "Angola", "Benin", "Botswana", "Burkina Faso", "Burundi", "Cabo Verde", "Cameroon", "Central African Republic", "Chad", "Comoros", "Congo", "Djibouti", "Egypt", "Equatorial Guinea", "Eritrea", "Eswatini", "Ethiopia", "Gabon", "Gambia", "Ghana", "Guinea", "Guinea-Bissau", "Ivory Coast", "Kenya", "Lesotho", "Liberia", "Libya", "Madagascar", "Malawi", "Mali", "Mauritania", "Mauritius", "Morocco", "Mozambique", "Namibia", "Niger", "Nigeria", "Rwanda", "Sao Tome and Principe", "Senegal", "Seychelles", "Sierra Leone", "Somalia", "South Africa", "South Sudan", "Sudan", "Tanzania", "Togo", "Tunisia", "Uganda", "Zambia", "Zimbabwe"],
-        "Oceania": ["New Caledonia", "French Polynesia", "Cook Islands", "Australia", "Fiji", "Kiribati", "Marshall Islands", "Micronesia", "Nauru", "New Zealand", "Palau", "Papua New Guinea", "Samoa", "Solomon Islands", "Tonga", "Tuvalu", "Vanuatu"]
-    }
-    
+    with open(PATH+REGION_INFO_NAME, "r") as region_infos_json:
+        continent_countries = json.load(region_infos_json)
+
     all_nations_list = list(data['Country/Territory'])
     regions = []
     
@@ -87,38 +109,38 @@ def transform(raw_data, log_fp):
                 break
         if not find:
             regions.append("None")
-
     data['Region']=regions    
     
-    logger("Transform Done.", log_fp)
+    logger("Transform Done.")
     return data
 
-def load(data, log_fp):
-    logger("Loading Start.", log_fp)
+
+def load(data: pd.DataFrame):
+    """_summary_
+    Save transformed data in json file.
+    
+    Args:
+        data (pd.DataFrame): transformed data
+    """
+
+    logger("Loading Start.")    
     
     # Save in json file.
-    dir, _ = os.path.split(log_fp)
-    json_fn = "Countries_by_GDP.json"
-    json_fp = os.path.join(dir, json_fn)
-    data.to_json(json_fp, orient='columns')
-    logger("Loading Done.", log_fp)
-    return 
+    data.to_json(PATH+JSON_NAME, orient='columns')
+    logger("Loading Done.")
+    return
+
 
 if __name__=="__main__":
-    url = "https://en.wikipedia.org/wiki/List_of_countries_by_GDP_%28nominal%29"
-    path = "assets/"
-    filename = 'etl_project_log.txt'
-    file_path = path + filename
-    
     # init log file.
-    if not os.path.isfile(file_path):
-        f = open(file_path, 'w')
+    if not os.path.isfile(PATH+LOG_NAME):
+        f = open(PATH+LOG_NAME, 'w')
         f.close() 
 
     # Run ETL Process
-    raw_data = extract(url, log_fp=file_path)
-    data = transform(raw_data, log_fp=file_path)
-    load(data, log_fp=file_path)
+    tables_df = extract()
+    data = transform(tables_df)
+    load(data)
     
     # Requirements 1
     over_100B_GDP_nations = data.loc[data.Forecast > 100]['Country/Territory']
@@ -127,7 +149,6 @@ if __name__=="__main__":
 
     # Requirements 2    
     region_names = ["Asia", "North America", "Europe", "South America", "Africa", "Oceania"]
-
     print("\n[Requirements 2] Average GDP of Top 5 Nations (Unit: Billion Dollars)")    
     for region_name in region_names:
         top5_avg_GDP = round(data.loc[data.Region==region_name].iloc[:5]['Forecast'].mean(), 2)
