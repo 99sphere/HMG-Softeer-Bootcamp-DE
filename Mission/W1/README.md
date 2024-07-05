@@ -5,10 +5,11 @@
 ```
 python3 -m venv {virtual env name}
 ```
-#### activate & deactivate
+#### activate
 ```
 source {virtual env name}/bin/activate
 ```
+#### deactivate
 ```
 deactivate
 ```
