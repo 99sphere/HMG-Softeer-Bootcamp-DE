@@ -168,10 +168,26 @@ if __name__=="__main__":
     query = "SELECT Country FROM Countries_by_GDP WHERE GDP_USD_billion > 100"
     print(con.execute(query).fetchall())
     
+<<<<<<< HEAD
     # Requirements 2 (with SQL query) 
     region_names = ["Asia", "North America", "South America", "Europe", "Oceania", "Africa"]
     for region_name in region_names:        
         query = f"SELECT Region, ROUND(AVG(GDP_USD_billion), 2)  FROM ( SELECT * FROM Countries_by_GDP  WHERE Region='{region_name}' ORDER BY GDP_USD_billion DESC  LIMIT 5 )"
         print(tabulate(con.execute(query).fetchall(), tablefmt='psql'))
+=======
+    # Requirements 2 (with SQL query)
+    query = "SELECT Region, ROUND(AVG(GDP_USD_billion), 2)  FROM ( SELECT * FROM Countries_by_GDP  WHERE Region='Asia' ORDER BY GDP_USD_billion DESC  LIMIT 5 )"
+    print(con.execute(query).fetchall())
+    query = "SELECT Region, ROUND(AVG(GDP_USD_billion), 2)  FROM ( SELECT * FROM Countries_by_GDP  WHERE Region='North America' ORDER BY GDP_USD_billion DESC  LIMIT 5 )"
+    print(con.execute(query).fetchall())
+    query = "SELECT Region, ROUND(AVG(GDP_USD_billion), 2) FROM ( SELECT * FROM Countries_by_GDP  WHERE Region='Europe' ORDER BY GDP_USD_billion DESC  LIMIT 5 )"
+    print(con.execute(query).fetchall())
+    query = "SELECT Region, ROUND(AVG(GDP_USD_billion), 2)  FROM ( SELECT * FROM Countries_by_GDP  WHERE Region='South America' ORDER BY GDP_USD_billion DESC  LIMIT 5 )"
+    print(con.execute(query).fetchall())
+    query = "SELECT Region, ROUND(AVG(GDP_USD_billion), 2)  FROM ( SELECT * FROM Countries_by_GDP  WHERE Region='Africa' ORDER BY GDP_USD_billion DESC  LIMIT 5 )"
+    print(con.execute(query).fetchall())
+    query = "SELECT Region, ROUND(AVG(GDP_USD_billion), 2)  FROM ( SELECT * FROM Countries_by_GDP  WHERE Region='Oceania' ORDER BY GDP_USD_billion DESC  LIMIT 5 )"
+    print(con.execute(query).fetchall())
+>>>>>>> a4ef99315a84e9148b310361353cb09b586b0c49
     con.commit()
     con.close()
