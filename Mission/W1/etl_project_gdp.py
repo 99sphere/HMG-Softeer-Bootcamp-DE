@@ -12,7 +12,7 @@ URL = "https://en.wikipedia.org/wiki/List_of_countries_by_GDP_%28nominal%29"
 PATH = "assets/"
 LOG_NAME = 'etl_project_log.txt'
 JSON_NAME = "Countries_by_GDP.json"
-REGION_INFO_NAME = "region_infos.json"
+REGION_INFO_NAME = 'region_infos.json'
 
 def logger(msg: str):
     """_summary_
@@ -109,8 +109,7 @@ def transform(tables_df: pd.DataFrame)->pd.DataFrame:
                 break
         if not find:
             regions.append("None")
-    data['Region']=regions    
-    
+    data['Region']=regions        
     logger("Transform Done.")
     return data
 
@@ -146,10 +145,11 @@ if __name__=="__main__":
     over_100B_GDP_nations = data.loc[data.Forecast > 100]['Country/Territory']
     over_100B_GDP_nations_list = list(over_100B_GDP_nations)
     print("[Requirements 1] Over 100B GDP\n ", *over_100B_GDP_nations_list, sep=' ')
-
+    
     # Requirements 2    
     region_names = ["Asia", "North America", "Europe", "South America", "Africa", "Oceania"]
     print("\n[Requirements 2] Average GDP of Top 5 Nations (Unit: Billion Dollars)")    
     for region_name in region_names:
         top5_avg_GDP = round(data.loc[data.Region==region_name].iloc[:5]['Forecast'].mean(), 2)
         print(f"{region_name}: {top5_avg_GDP}")
+    

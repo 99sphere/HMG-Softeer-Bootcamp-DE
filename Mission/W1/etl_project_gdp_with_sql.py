@@ -9,6 +9,7 @@ import os.path
 from io import StringIO
 import sqlite3 as sq3
 import csv
+from tabulate import tabulate
 
 URL = "https://en.wikipedia.org/wiki/List_of_countries_by_GDP_%28nominal%29"
 PATH = "assets/"
@@ -20,9 +21,8 @@ def logger(msg: str):
     """_summary_
 
     Args:
-        msg (str): msg for logging
+        msg (str): _description_
     """
-
     with open(PATH+LOG_NAME, 'a') as f:
         time = datetime.now()
         time_str = f"{time.year}-{time.strftime("%B")}-{time.day:02d}-{time.hour:02d}-{time.second:02d}"
@@ -133,7 +133,7 @@ def load(data, con):
     
     # Save in sqlite3 DB
     data_sql = data[['Country/Territory', 'Forecast', 'Region']].copy().rename(columns={'Country/Territory':'Country', 'Forecast':'GDP_USD_billion'})
-    data_sql.to_sql('Countries_by_GDP', con, if_exists='replace')   
+    data_sql.to_sql('Countries_by_GDP', con, if_exists='replace')
     
     logger("Loading Done.")    
     return 
@@ -168,6 +168,13 @@ if __name__=="__main__":
     query = "SELECT Country FROM Countries_by_GDP WHERE GDP_USD_billion > 100"
     print(con.execute(query).fetchall())
     
+<<<<<<< HEAD
+    # Requirements 2 (with SQL query) 
+    region_names = ["Asia", "North America", "South America", "Europe", "Oceania", "Africa"]
+    for region_name in region_names:        
+        query = f"SELECT Region, ROUND(AVG(GDP_USD_billion), 2)  FROM ( SELECT * FROM Countries_by_GDP  WHERE Region='{region_name}' ORDER BY GDP_USD_billion DESC  LIMIT 5 )"
+        print(tabulate(con.execute(query).fetchall(), tablefmt='psql'))
+=======
     # Requirements 2 (with SQL query)
     query = "SELECT Region, ROUND(AVG(GDP_USD_billion), 2)  FROM ( SELECT * FROM Countries_by_GDP  WHERE Region='Asia' ORDER BY GDP_USD_billion DESC  LIMIT 5 )"
     print(con.execute(query).fetchall())
@@ -181,5 +188,6 @@ if __name__=="__main__":
     print(con.execute(query).fetchall())
     query = "SELECT Region, ROUND(AVG(GDP_USD_billion), 2)  FROM ( SELECT * FROM Countries_by_GDP  WHERE Region='Oceania' ORDER BY GDP_USD_billion DESC  LIMIT 5 )"
     print(con.execute(query).fetchall())
+>>>>>>> a4ef99315a84e9148b310361353cb09b586b0c49
     con.commit()
     con.close()
