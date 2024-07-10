@@ -7,10 +7,12 @@ NUM_PROCESSES = 4
 def target_func(tasks_to_accomplish, tasks_that_are_done):
     try:
         while True:
-            val = tasks_to_accomplish.get_nowait()
-            print(f"Task no {val}")
-            time.sleep(0.5)
-            tasks_that_are_done.put(f"Task no {val} is done by {current_process().name}")
+            task_id = tasks_to_accomplish.get_nowait()
+            print(f"Task no {task_id}")
+            val = time.time()
+            time.sleep(2)
+            print(time.time()-val)
+            tasks_that_are_done.put(f"Task no {task_id} is done by {current_process().name}")
     except Exception as e: 
         pass          
     return
