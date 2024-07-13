@@ -1,7 +1,7 @@
 import time
 from multiprocessing import Pool
 
-NUM_CORES = 4
+NUM_CORES = 2
 TASKS = [("A", 5), ("B", 2), ("C", 1), ("D", 3)]
 
 def work_log(task):
@@ -10,7 +10,6 @@ def work_log(task):
     time.sleep(duration)
     print(f"Process {name} Finished.")
     return None
-
 
 if __name__=="__main__":
     pool = Pool(NUM_CORES)
