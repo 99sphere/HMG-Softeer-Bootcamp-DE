@@ -1,17 +1,16 @@
 import time
 from multiprocessing import Pool, Queue, Process, current_process, Manager, JoinableQueue
 
-NUM_TASK = 10
+NUM_TASK = 8
 NUM_PROCESSES = 4
 
 def target_func(tasks_to_accomplish, tasks_that_are_done):
     try:
         while True:
             task_id = tasks_to_accomplish.get_nowait()
+            time.sleep(0.5)
             print(f"Task no {task_id}")
-            val = time.time()
-            time.sleep(2)
-            print(time.time()-val)
+            
             tasks_that_are_done.put(f"Task no {task_id} is done by {current_process().name}")
     except Exception as e: 
         pass          
