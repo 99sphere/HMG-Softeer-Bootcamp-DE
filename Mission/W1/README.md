@@ -230,12 +230,12 @@ CREATE VIEW {view name} AS SELECT ORDER_ID FROM SALES WHERE CANCELED='Y';
 ## 4. Concepts & Feedback(from Lecture)
 ### 4.1 Concepts
 ### 4.1.1. ETL
-#### 4.1.1.1. Extract
-기존의 DB, 웹사이트, SaaS 등에서 raw data를 수집하는 과정.
-#### 4.1.1.2. Transform
-수집한 raw data를 목적에 맞게 가공하는 과정. (ex. 비정형 데이터를 정형 데이터로 가공, 모든 feature 중 유의미한 feature만 추출, 의도에 맞게 정렬, 중복 데이터 제거 등)
-#### 4.1.1.3. Load
-목적에 맞게 가공된 데이터를 데이터 저장소에 저장.
+- Extract
+    -  기존의 DB, 웹사이트, SaaS 등에서 raw data를 수집하는 과정.
+- Transform
+    - 수집한 raw data를 목적에 맞게 가공하는 과정. (ex. 비정형 데이터를 정형 데이터로 가공, 모든 feature 중 유의미한 feature만 추출, 의도에 맞게 정렬, 중복 데이터 제거 등)
+- Load
+    - 목적에 맞게 가공된 데이터를 데이터 저장소에 저장.
 
 ### 4.2 Feedback
 #### 4.2.1. mission 1 관련
