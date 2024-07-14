@@ -19,7 +19,7 @@
 - Input data를 다양한 process에 편리하게 분배하여 (동일한) 함수 실행의 병렬화를 편리하게 구현할 수 있다. 
 
 #### 1.2.2. Process
-- Pool보다 detail한 설정이 가능하다. 각 process에서 수행할 함수와 입력 데이터를 각각 수행할 수 있으며, start, join의 시점 역시 각각 설정할 수 있다.
+- Pool보다 detail한 설정이 가능하다. 각 process에서 수행할 함수와 입력 데이터를 각각 할당할 수 있으며, start, join의 시점 역시 각각 설정할 수 있다.
 
 #### 1.2.3. Queue
 - 다양한 process 사이의 안전한 communication이 가능하도록 한다. 
