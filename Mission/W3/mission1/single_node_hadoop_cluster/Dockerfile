@@ -9,12 +9,14 @@ RUN apt-get update -y \
         curl \
         ssh \
     && apt-get clean
+
 RUN useradd -m hduser && echo "hduser:supergroup" | chpasswd && adduser hduser sudo && echo "hduser     ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && cd /usr/bin/ && sudo ln -s python3 python
 COPY ssh_config /etc/ssh/ssh_config
 
 WORKDIR /home/hduser
 USER hduser
 RUN ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa && cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys && chmod 0600 ~/.ssh/authorized_keys
+
 ENV HADOOP_VERSION=3.3.6
 ENV HADOOP_HOME /home/hduser/hadoop-${HADOOP_VERSION}
 RUN curl -sL --retry 3 \
