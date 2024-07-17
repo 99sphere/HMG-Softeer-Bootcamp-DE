@@ -1,16 +1,21 @@
 ### Mission 1
 
-#### Image Build from Dockerfile
+#### Bulild Image and Create Container
+##### 1. Using Docker
+- Build image.
 ```
 docker build -t single_node_hadoop_cluster .
 ```
 
-#### Create Container
+- Create Container
 ```
-docker run --name single_node_hadoop_cluster -v data:/homde/hduser/ -p 9864:9864 -p 9870:9870 -p 8088:8088 -p 9000:9000 single_node_hadoop_cluster
+docker run --name single_node_hadoop_cluster -v hdfs-data:/home/hduser/hdfs-data/ -p 9864:9864 -p 9870:9870 -p 8088:8088 -p 9000:9000 --hostname localhost single_node_hadoop_cluster
 ```
-<!-- -v hdfs_data:/home/hduser/ -->
 
+#### 2. Using docker-compose
+```
+docker compose up -d
+```
 
 #### Attach to Docker Container
 ```
@@ -44,4 +49,8 @@ hdfs dfs -put ~/text_file.txt /mission1/
 ```
 mkdir ~/retrieve_dir
 hdfs dfs -get /mission1/text_file.txt ~/retrieve_dir/
+diff text_file.txt retrieve_dir/text_file.txt 
 ```
+
+#### Stop and Restart Docker Container
+- hdfs-site.xml 파일에서 namenode, datanode의 정보를 docker volume에 저장하도록 설정하였기 때문에, container의 종료 및 재실행에도 데이터가 유지된다.
