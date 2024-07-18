@@ -58,23 +58,17 @@ RUN mv /tmp/ssh_config ~/.ssh/config && \
     mv /tmp/yarn-site.xml $HADOOP_HOME/etc/hadoop/yarn-site.xml && \
     mv /tmp/slaves $HADOOP_HOME/etc/hadoop/slaves && \
     mv /tmp/start-hadoop.sh ~/start-hadoop.sh && \
-    mv /tmp/run_wordcount.sh ~/run_wordcount.sh
+    mv /tmp/run_wordcount.sh ~/run_wordcount.sh && \
+    mv /tmp/script_config_modify.sh ~/script_config_modify.sh && \
+    mv /tmp/script_verify.sh ~/script_verify.sh && \
+    mv /tmp/modify_config.py ~/modify_config.py
 
 RUN chmod +x ~/start-hadoop.sh && \
     chmod +x ~/run_wordcount.sh && \
+    chmod +x ~/script_config_modify.sh && \
+    chmod +x ~/script_verify.sh && \
     chmod +x $HADOOP_HOME/sbin/start-dfs.sh && \
     chmod +x $HADOOP_HOME/sbin/start-yarn.sh 
-
-
-# RUN $HADOOP_HOME/bin/hdfs namenode -format
-
-# RUN /root/start_hadoop.sh
-
-# orig
-# CMD [ "sh", "-c", "service ssh start; bash"]
-# new
-# RUN sh -c service ssh start; bash
-# CMD ["./start_hadoop.sh"]
 
 CMD service ssh start && ~/start-hadoop.sh
 # ENTRYPOINT ["~/start-hadoop.sh"]

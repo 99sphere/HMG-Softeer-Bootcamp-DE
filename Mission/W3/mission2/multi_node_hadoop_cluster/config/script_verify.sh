@@ -1,39 +1,48 @@
 #!/bin/bash
 
-# Function to check configuration setting
-check_setting() {
-    local command=("${@}")
-    local expected_value="$1"
-    local actual_value
+# Define the commands and their expected values
+declare -a commands=(
+  "hdfs getconf -confKey fs.defaultFS"
+  "hdfs getconf -confKey hadoop.tmp.dir"
+  "hdfs getconf -confKey io.file.buffer.size"
+  "hdfs getconf -confKey dfs.replication"
+  "hdfs getconf -confKey dfs.blocksize"
+  "hdfs getconf -confKey dfs.namenode.name.dir"
+  "hdfs getconf -confKey mapreduce.framework.name"
+  "hdfs getconf -confKey mapreduce.job.tracker"
+  "hdfs getconf -confKey mapreduce.task.io.sort.mb"
+  "hdfs getconf -confKey yarn.resourcemanager.hostname"
+  "hdfs getconf -confKey yarn.nodemanager.resource.memory-mb"
+  "hdfs getconf -confKey yarn.scheduler.minimum-allocation-mb"
+)
 
-    # Run the command and capture the output
-    actual_value=$( "${command[@]}" 2>/dev/null )
+declare -A expected_values=(
+  ["fs.defaultFS"]="hdfs://namenode:9000"
+  ["hadoop.tmp.dir"]="/hadoop/tmp"
+  ["io.file.buffer.size"]="131072"
+  ["dfs.replication"]="2"
+  ["dfs.blocksize"]="134217728"
+  ["dfs.namenode.name.dir"]="/hadoop/dfs/name"
+  ["mapreduce.framework.name"]="yarn"
+  ["mapreduce.job.tracker"]="namenode:9001"
+  ["mapreduce.task.io.sort.mb"]="256"
+  ["yarn.resourcemanager.hostname"]="resourcemanager"
+  ["yarn.nodemanager.resource.memory-mb"]="8192"
+  ["yarn.scheduler.minimum-allocation-mb"]="1024"
+)
 
-    # Check if the actual value matches the expected value
-    if [[ "${actual_value}" == "${expected_value}" ]]; then
-        echo "PASS: ${command[*]} -> ${actual_value}"
-    else
-        echo "FAIL: ${command[*]} -> ${actual_value} (expected ${expected_value})"
-    fi
-}
+# Loop through the commands and check their values
+for cmd in "${commands[@]}"; do
+  # Extract the configuration key
+  key=$(echo $cmd | awk '{print $NF}')
+  expected=${expected_values[$key]} # Get the expected value
 
-# HDFS settings
-check_setting hdfs getconf -confKey fs.defaultFS "hdfs://namenode:9000"
-check_setting hdfs getconf -confKey hadoop.tmp.dir "/hadoop/tmp"
-check_setting hdfs getconf -confKey io.file.buffer.size "131072"
-check_setting hdfs getconf -confKey dfs.replication "2"
-check_setting hdfs getconf -confKey dfs.blocksize "134217728"
-check_setting hdfs getconf -confKey dfs.namenode.name.dir "/hadoop/dfs/name"
+  # Execute the command and get the actual value
+  actual=$($cmd 2>/dev/null)
 
-# MapReduce settings
-check_setting hadoop getconf -confKey mapreduce.framework.name "yarn"
-check_setting hadoop getconf -confKey mapreduce.job.tracker "namenode:9001"
-check_setting hadoop getconf -confKey mapreduce.task.io.sort.mb "256"
-
-# YARN settings
-check_setting yarn getconf -confKey yarn.resourcemanager.hostname "resourcemanager"
-check_setting yarn getconf -confKey yarn.nodemanager.resource.memory-mb "8192"
-check_setting yarn getconf -confKey yarn.scheduler.minimum-allocation-mb "1024"
-
-# Additional setting
-echo "PASS: Replication factor is 2"
+  if [ "$actual" == "$expected" ]; then
+    echo "PASS: [$cmd] -> $actual"
+  else
+    echo "FAIL: [$cmd] -> $actual (expected $expected)"
+  fi
+done
