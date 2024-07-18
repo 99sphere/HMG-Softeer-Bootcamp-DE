@@ -1,56 +1,41 @@
-### Mission 2
+### Mission 2-a
 
-#### Bulild Image and Create Container
-##### 1. Using Docker
-- Build image.
+#### Bulild Image and Create Containers
+- Run Container
 ```
-docker build -t multi_node_hadoop_cluster .
-```
-
-- Create Container
-```
-docker run --name multi_node_hadoop_cluster --hostname master multi_node_hadoop_cluster
+docker compose up -d .
 ```
 
-#### 2. Using docker-compose
+- Attach to master node
 ```
-docker compose up -d
+docker exec -it hadoop-master /bin/bash
 ```
 
-#### Attach to Docker Container
+#### Run MapReduce Job
 ```
-docker exec -it multi_node_hadoop_cluster /bin/bash
+./run_wordcount.sh
 ```
 
 #### Check Hadoop serivces
 jps command를 이용하여 현재 실행 중인 hadoop service 확인
+- Master Node
+    - NameNode, SecondaryNameNode, ResourceNamager, NodeManager 실행
+
+- Slave Node
+    - DataNode, NodeManager 실행
+
+
+#### Retrieve Containers & Check Data Persistency
 ```
-1475 ResourceManager
-632 SecondaryNameNode
-1800 NodeManager
-250 NameNode
-410 DataNode
-1996 Jps
+docker-compose down
+docker-compose up -d
 ```
 
-#### HDFS HDFS Operations
-- Create a directory in HDFS
-```
-hdfs dfs -mkdir /mission2
-```
+localhost:9870 -> Utilities -> Browse the file system에서, 앞서 생성한 wordcount 결과 확인 가능 (/user/root/output)
 
-- Upload a file from the local file system to the directory in HDFS
-```
-echo "Hello, World!" >> ~/text_file.txt
-hdfs dfs -put ~/text_file.txt /mission2/
-```
-
-- Retrieve the uploaded file from HDFS to the local file system.
-```
-mkdir ~/retrieve_dir
-hdfs dfs -get /mission2/text_file.txt ~/retrieve_dir/
-diff text_file.txt retrieve_dir/text_file.txt 
-```
-
-#### Stop and Restart Docker Container
-- hdfs-site.xml 파일에서 namenode, datanode의 정보를 docker volume에 저장하도록 설정하였기 때문에, container의 종료 및 재실행에도 데이터가 유지된다.
+#### Trouble Shooting
+- dockerfile의 entry point에서 사용하는 shell script를 수정하다가 생긴 오류를 고치려고 많은 시간을 썼다.
+- docker compose를 이용하면 알아서 이미지 빌드부터 컨테이너의 생성까지 해준다.
+- 나는 dockerfile을 고치지 않았고, shell script만 고친 상태이니 docker compose를 이용해서 실행할 때 이미지를 다시 빌드하지 않는다.
+- 그렇게 만들어진 container에는 당연히 shell script가 수정되어 있지 않다.
+- 이걸 몰라서 2시간 정도를 날렸다~
