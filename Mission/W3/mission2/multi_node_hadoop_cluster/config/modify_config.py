@@ -13,10 +13,11 @@ predefined_hdfs_dict = {
                          'dfs.namenode.name.dir': '/hadoop/dfs/name',
                          }
 predefined_mapred_dict = {'mapreduce.framework.name': 'yarn',
-                           'mapreduce.job.tracker': 'namenode:9001',
+                           'mapreduce.jobhistory.address': 'namenode:10020',
                            'mapreduce.task.io.sort.mb': '256',
                            }
-predefined_yarn_dict = {'yarn.resourcemanager.hostname': 'resourcemanager',
+
+predefined_yarn_dict = {'yarn.resourcemanager.address': 'namenode:8032',
                          'yarn.nodemanager.resource.memory-mb': '8192',
                          'yarn.scheduler.minimum-allocation-mb': '1024',
                          }
@@ -53,7 +54,6 @@ def main():
             ET.SubElement(obj, 'value').text = value
           
     tree.write(xml_path, encoding='UTF-8', xml_declaration=True)
-
     return 
 
 if __name__=="__main__":

@@ -26,6 +26,14 @@ echo Stopping Hadoop DFS...
 stop-dfs.sh
 echo Stopping YARN...
 stop-yarn.sh
+
+
+output=$(hdfs getconf -confKey dfs.namenode.name.dir)
+if [ ! -d $output ]; then
+    $HADOOP_HOME/bin/hdfs namenode -format && echo "OK : HDFS namenode format operation finished successfully !"
+fi
+
+
 echo Starting Hadoop DFS...
 start-dfs.sh
 echo Starting YARN...

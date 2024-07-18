@@ -9,9 +9,9 @@ declare -a commands=(
   "hdfs getconf -confKey dfs.blocksize"
   "hdfs getconf -confKey dfs.namenode.name.dir"
   "hdfs getconf -confKey mapreduce.framework.name"
-  "hdfs getconf -confKey mapreduce.job.tracker"
+  "hdfs getconf -confKey mapreduce.jobhistory.address"  
   "hdfs getconf -confKey mapreduce.task.io.sort.mb"
-  "hdfs getconf -confKey yarn.resourcemanager.hostname"
+  "hdfs getconf -confKey yarn.resourcemanager.address"
   "hdfs getconf -confKey yarn.nodemanager.resource.memory-mb"
   "hdfs getconf -confKey yarn.scheduler.minimum-allocation-mb"
 )
@@ -24,12 +24,13 @@ declare -A expected_values=(
   ["dfs.blocksize"]="134217728"
   ["dfs.namenode.name.dir"]="/hadoop/dfs/name"
   ["mapreduce.framework.name"]="yarn"
-  ["mapreduce.job.tracker"]="namenode:9001"
+  ["mapreduce.jobhistory.address"]="namenode:10020"
   ["mapreduce.task.io.sort.mb"]="256"
-  ["yarn.resourcemanager.hostname"]="resourcemanager"
+  ["yarn.resourcemanager.address"]="namenode:8032"
   ["yarn.nodemanager.resource.memory-mb"]="8192"
   ["yarn.scheduler.minimum-allocation-mb"]="1024"
 )
+
 
 # Loop through the commands and check their values
 for cmd in "${commands[@]}"; do

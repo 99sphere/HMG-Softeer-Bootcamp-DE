@@ -2,7 +2,7 @@
 
 echo "$HOSTNAME Start"
 
-if [[ "$HOSTNAME" == "hadoop-master" ]]; then
+if [[ "$HOSTNAME" == "namenode" ]]; then
   if [ ! -d "/root/data/namenode/" ]; then
     $HADOOP_HOME/bin/hdfs namenode -format && echo "OK : HDFS namenode format operation finished successfully !"
   fi
