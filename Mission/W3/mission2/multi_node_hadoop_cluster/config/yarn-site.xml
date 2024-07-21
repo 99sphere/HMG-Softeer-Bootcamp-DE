@@ -9,7 +9,15 @@
         <value>org.apache.hadoop.mapred.ShuffleHandler</value>
     </property>
     <property>
+        <name>yarn.nodemanager.resource.memory-mb</name>
+        <value>8192</value>
+    </property>
+    <property>
         <name>yarn.resourcemanager.hostname</name>
         <value>hadoop-master</value>
+    </property>
+    <property>
+        <name>yarn.scheduler.minimum-allocation-mb</name>
+        <value>1024</value>
     </property>
 </configuration>

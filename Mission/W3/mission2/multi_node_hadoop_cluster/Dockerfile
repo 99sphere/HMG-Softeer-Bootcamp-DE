@@ -51,6 +51,7 @@ RUN ssh-keygen -t rsa -f ~/.ssh/id_rsa -P '' && \
 RUN mkdir $HADOOP_HOME/logs
 
 COPY config/* /tmp/
+COPY missions /tmp/missions
 
 RUN mv /tmp/ssh_config ~/.ssh/config && \
     mv /tmp/hadoop-env.sh $HADOOP_HOME/etc/hadoop/hadoop-env.sh && \
@@ -59,18 +60,25 @@ RUN mv /tmp/ssh_config ~/.ssh/config && \
     mv /tmp/mapred-site.xml $HADOOP_HOME/etc/hadoop/mapred-site.xml && \
     mv /tmp/yarn-site.xml $HADOOP_HOME/etc/hadoop/yarn-site.xml && \
     mv /tmp/slaves $HADOOP_HOME/etc/hadoop/slaves && \
-    mv /tmp/start-hadoop.sh ~/start-hadoop.sh && \
-    mv /tmp/run_wordcount.sh ~/run_wordcount.sh && \
-    mv /tmp/script_config_modify.sh ~/script_config_modify.sh && \
-    mv /tmp/script_verify.sh ~/script_verify.sh && \
-    mv /tmp/modify_config.py ~/modify_config.py
+    mv /tmp/start-hadoop.sh ~/start-hadoop.sh 
 
-RUN chmod +x ~/start-hadoop.sh && \
-    chmod +x ~/run_wordcount.sh && \
-    chmod +x ~/script_config_modify.sh && \
-    chmod +x ~/script_verify.sh && \
-    chmod +x $HADOOP_HOME/sbin/start-dfs.sh && \
-    chmod +x $HADOOP_HOME/sbin/start-yarn.sh 
+# RUN mv /tmp/script_config_modify.sh ~/script_config_modify.sh && \
+#     mv /tmp/script_verify.sh ~/script_verify.sh && \
+#     mv /tmp/modify_config.py ~/modify_config.py
 
+RUN mv /tmp/missions ~/missions
+
+RUN chmod +x $HADOOP_HOME/sbin/start-dfs.sh && \
+    chmod +x $HADOOP_HOME/sbin/start-yarn.sh && \
+    chmod +x ~/start-hadoop.sh && \
+    chmod +x ~/missions/mission2-b/run_wordcount.sh && \
+    chmod +x ~/missions/mission2-b/script_config_modify.sh && \
+    chmod +x ~/missions/mission2-b/script_verify.sh && \
+    chmod +x ~/missions/mission3/mission3.sh && \
+    chmod +x ~/missions/mission4/mission4.sh && \
+    chmod +x ~/missions/mission5/mission5.sh && \
+    chmod +x ~/missions/mission6/mission6.sh && \
+    chmod +x ~/missions/mission6/download_csv.sh 
+    
 CMD service ssh start && ~/start-hadoop.sh
 # ENTRYPOINT ["~/start-hadoop.sh"]
