@@ -2,7 +2,7 @@ services:
   hadoop-master:
     build: "./multi_node_hadoop_cluster"
     container_name: hadoop-master
-    hostname: namenode
+    hostname: hadoop-master
     volumes:
       - hadoop-master:/root/data
     ports:
@@ -14,7 +14,7 @@ services:
   hadoop-slave1:
     build: "./multi_node_hadoop_cluster"
     container_name: hadoop-slave1
-    hostname: datanode1
+    hostname: hadoop-slave1
     volumes:
       - hadoop-slave1:/root/data
     networks:
@@ -23,16 +23,36 @@ services:
   hadoop-slave2:
     build: ./multi_node_hadoop_cluster
     container_name: hadoop-slave2
-    hostname: datanode2
+    hostname: hadoop-slave2
     volumes:
       - hadoop-slave2:/root/data 
     networks:
       - hadoop
 
+  # hadoop-slave3:
+  #   build: ./multi_node_hadoop_cluster
+  #   container_name: datanode3
+  #   hostname: datanode3
+  #   volumes:
+  #     - datanode3:/root/data 
+  #   networks:
+  #     - hadoop
+
+  # hadoop-slave4:
+  #   build: ./multi_node_hadoop_cluster
+  #   container_name: datanode4
+  #   hostname: datanode4
+  #   volumes:
+  #     - datanode4:/root/data 
+  #   networks:
+  #     - hadoop
+
 volumes:
   hadoop-master: 
   hadoop-slave1:
   hadoop-slave2:
+  # datanode3:
+  # datanode4:
 
 networks:
   hadoop:
