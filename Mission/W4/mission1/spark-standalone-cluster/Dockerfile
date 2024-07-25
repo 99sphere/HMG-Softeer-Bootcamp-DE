@@ -52,6 +52,7 @@ WORKDIR /home/spark_user
 COPY scripts/* .
 
 RUN sudo chmod +x entrypoint.sh && \
-    sudo chmod +x mission1.sh
+    sudo chmod +x mission1.sh && \
+    sudo chmod +x pi_modified.py
 
 CMD ["sh", "-c", "entrypoint.sh"]

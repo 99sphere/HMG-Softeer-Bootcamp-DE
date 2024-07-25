@@ -11,13 +11,18 @@ docker exec -it spark-master /bin/bash
 ./mission1.sh
 ```
 
-- mission1.sh is consist below commands.
+- The file mission1.sh consists of the following commands. After executing mission1.sh, an output file is created at /home/spark_user/pi_result.csv.
 
-```
-# mission1.sh
+``` (mission1.sh)
+#! /bin/bash
 cd ~
-spark-submit ./spark/examples/src/main/python/pi.py &> result.txt
-cat result.txt
+spark-submit pi_modified.py
+echo
+echo
+echo
+echo "===== [result of pi_modified.py] ====="
+cat pi_result.csv
 ```
+
 (Result Example)
-<img width="1039" alt="image" src="https://github.com/user-attachments/assets/875993f9-a422-446d-91c1-ea8cab665dff">
+<img width="1254" alt="image" src="https://github.com/user-attachments/assets/00620f56-39eb-4d5e-aead-9a1317c0faac">

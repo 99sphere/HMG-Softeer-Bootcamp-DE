@@ -1,5 +1,9 @@
 #! /bin/bash
 
 cd ~
-spark-submit ./spark/examples/src/main/python/pi.py &> result.txt
-cat result.txt
+spark-submit pi_modified.py
+echo
+echo
+echo
+echo "===== [result of pi_modified.py] ====="
+cat pi_result.csv

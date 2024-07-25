@@ -51,6 +51,7 @@ RUN mkdir -p ${SPARK_HOME}/spark-events
 
 WORKDIR /home/spark_user
 COPY scripts/* .
+RUN mkdir code
 
 RUN sudo chmod +x entrypoint.sh && \
     sudo chmod +x mission1.sh
