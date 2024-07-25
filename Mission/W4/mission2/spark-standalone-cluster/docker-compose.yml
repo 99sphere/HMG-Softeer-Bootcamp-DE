@@ -7,9 +7,11 @@ services:
     entrypoint: ['./entrypoint.sh', 'master']
     volumes:  
       - spark-logs:/home/spark_user/spark/spark-events
+      - W4M2:/home/spark_user/code
     ports:
       - '8080:8080'
       - '7077:7077'
+      - '8888:8888'
     networks:
       - spark
 
@@ -57,7 +59,7 @@ services:
 
 volumes:
   spark-logs:
-
+  W4M2:
 networks:
   spark:
     driver: bridge
