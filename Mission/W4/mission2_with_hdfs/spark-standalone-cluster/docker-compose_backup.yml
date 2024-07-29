@@ -22,7 +22,7 @@ services:
     container_name: spark-history
     hostname: spark-history-server
     build: .
-    entrypoint: ['./entrypoint.sh', 'history']
+    # entrypoint: ['./entrypoint.sh', 'history']
     depends_on:
       - spark-master
     volumes:
@@ -37,7 +37,7 @@ services:
     container_name: spark-worker1
     hostname: spark-worker1
     build: .
-    entrypoint: ['./entrypoint.sh', 'worker']
+    # entrypoint: ['./entrypoint.sh', 'worker']
     depends_on:
       - spark-master
     volumes:
@@ -53,7 +53,7 @@ services:
     container_name: spark-worker2
     hostname: spark-worker2
     build: .
-    entrypoint: ['./entrypoint.sh', 'worker']
+    # entrypoint: ['./entrypoint.sh', 'worker']
     depends_on:
       - spark-master
     volumes:
