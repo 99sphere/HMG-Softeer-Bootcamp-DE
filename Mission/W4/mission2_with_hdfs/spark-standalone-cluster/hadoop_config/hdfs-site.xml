@@ -2,11 +2,11 @@
 <configuration>
     <property>
         <name>dfs.namenode.name.dir</name>
-        <value>/user/hduser/data/namenode</value>
+        <value>/home/hduser/data/namenode</value>
     </property>
     <property>
         <name>dfs.datanode.data.dir</name>
-        <value>/user/hduser/data/namenode</value>
+        <value>/home/hduser/data/datanode</value>
         <description>DataNode directory</description>
     </property>
     <property>

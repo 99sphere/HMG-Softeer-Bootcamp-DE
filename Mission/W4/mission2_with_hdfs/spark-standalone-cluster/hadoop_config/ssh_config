@@ -3,23 +3,19 @@ Host localhost
 
 Host 0.0.0.0
   StrictHostKeyChecking no
-  
-Host hadoop-*
+
+Host spark-master
    StrictHostKeyChecking no
    UserKnownHostsFile=/dev/null
 
-Host spark*
+Host spark-history
    StrictHostKeyChecking no
    UserKnownHostsFile=/dev/null
 
-Host namenode
+Host spark-worker1
    StrictHostKeyChecking no
    UserKnownHostsFile=/dev/null
 
-Host datanode1
-  StrictHostKeyChecking no
-  UserKnownHostsFile=/dev/null
-
-Host datanode2
-  StrictHostKeyChecking no
-  UserKnownHostsFile=/dev/null
+Host spark-worker2
+   StrictHostKeyChecking no
+   UserKnownHostsFile=/dev/null
