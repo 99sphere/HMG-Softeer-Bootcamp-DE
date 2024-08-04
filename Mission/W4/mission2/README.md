@@ -1,8 +1,22 @@
-# Mission 2
-## 1. Spark & HDFS Setting
-- Mission 1 (W4M1)에서 셋팅한 환경을 그대로 사용했다.
+# W4M2
+## 1. Intro
+- 제출 파일 목록
+    - README.md
+    - W4M2.ipynb
 
-## 2.Change User
+## 2. Environment
+### Spark Standalone Cluster with HDFS
+- Docker를 이용하여 총 4개의 container로 spark stand-alone cluster를 구성하였다.
+- Spark의 경우, spark-master, 두 개의 spark-worker, spark-history-server로 구성하였다.
+- HDFS의 경우, spark-master node에서 namenode를, 나머지에서 datanode를 실행하였다.
+
+### Spark Web UI
+<img width="1704" alt="spark-master" src="https://github.com/user-attachments/assets/72d3ad11-dfbb-47ab-be58-9fe4b179ef3d">
+
+### Hadoop Web UI
+<img width="1170" alt="hadoop" src="https://github.com/user-attachments/assets/ca159063-fcea-4ca4-b6e0-6ab1588d25de">
+
+## 3.Change User
 - container 실행 시, default로 spark-user로 접속하므로,  hdfs 관련 권한을 가진 'hduser'로 user를 바꿔준다.
 - 이후, hadoop path를 환경변수로 설정한다.
 ```
@@ -11,7 +25,7 @@ cd
 source path_setup.sh
 ```
 
-## 3. Data Loading
+## 4. Data Loading
 - Local file system의 data들을 hdfs로 올린다.
 - 이후, 모든 사용자가 hdfs 상의 데이터에 접근할 수 있도록 권한을 수정한다.
 - spark의 연산 결과를 저장할 폴더를 만들고, 모든 사용자가 이용할 수 있도록 권한을 수정한다.
@@ -26,13 +40,13 @@ hadoop fs -chmod 777 /user/spark_user/W4M2_output
 exit
 ```
 
-## 4. Run Jupyter
+## 5. Run Jupyter
 - Interactive한 데이터 분석을 위해, jupyter notebook을 이용한다.
 - 그 결과를 W4M2.ipynb 파일로 함께 제출하였다.
 - 실행 결과는 hdfs 상에 저장하였다.
 
 
-## 5. Results
+## 6. Results
 ### Peak Hour Identification
 - 평균적으로, 퇴근 시간대(18시 이후)에 높은 수요를 보인다.
 
