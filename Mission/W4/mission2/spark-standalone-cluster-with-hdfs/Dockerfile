@@ -68,8 +68,7 @@ RUN sudo chmod +x entrypoint.sh && \
 
 USER hduser
 WORKDIR /home/hduser
-RUN mkdir -p /home/hduser/data/namenode
-RUN mkdir /home/hduser/data/datanode
+RUN mkdir -p /home/hduser/data
 RUN sudo chown -R hduser /home/hduser
 
 RUN curl -sL --retry 3 \

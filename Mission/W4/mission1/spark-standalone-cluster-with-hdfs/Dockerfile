@@ -51,9 +51,7 @@ RUN sudo curl https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark
 COPY requirements/requirements.txt .
 RUN pip3 install -r requirements.txt
 
-
 COPY conf/spark-defaults.conf "$SPARK_HOME/conf"
-# # COPY data/ /home/spark_user/data
 
 RUN sudo chown -R spark_user /home/spark_user
 RUN chmod u+x $SPARK_HOME/sbin/* && \
@@ -64,14 +62,14 @@ RUN mkdir -p ${SPARK_HOME}/spark-events
 COPY scripts/* .
 RUN mkdir code
 RUN sudo chmod +x entrypoint.sh && \
-    sudo chmod +x mission1.sh
+    sudo chmod +x mission1.sh && \
+    sudo chmod +x pi_modified.py
 
 USER hduser
 WORKDIR /home/hduser
 RUN mkdir -p /home/hduser/data/namenode
 RUN mkdir /home/hduser/data/datanode
 RUN sudo chown -R hduser /home/hduser
-
 
 RUN curl -sL --retry 3 \
   "http://archive.apache.org/dist/hadoop/common/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz" \
@@ -98,11 +96,15 @@ RUN sudo cp /tmp/ssh_config /etc/ssh/ssh_config && \
     sudo mv /tmp/mapred-site.xml $HADOOP_HOME/etc/hadoop/mapred-site.xml && \
     sudo mv /tmp/yarn-site.xml $HADOOP_HOME/etc/hadoop/yarn-site.xml && \
     sudo mv /tmp/slaves $HADOOP_HOME/etc/hadoop/slaves && \
-    sudo mv /tmp/start-hadoop.sh ~/start-hadoop.sh 
+    sudo mv /tmp/start-hadoop.sh ~/start-hadoop.sh && \
+    sudo mv /tmp/path_setup.sh ~/path_setup.sh 
 
 RUN sudo chmod +x $HADOOP_HOME/sbin/start-dfs.sh && \
     sudo chmod +x $HADOOP_HOME/sbin/start-yarn.sh && \
-    sudo chmod +x ~/start-hadoop.sh
+    sudo chmod +x ~/start-hadoop.sh && \
+    sudo chmod +x ~/path_setup.sh
+
+RUN sudo chown -R hduser /home/hduser
 
 USER spark_user
 WORKDIR /home/spark_user

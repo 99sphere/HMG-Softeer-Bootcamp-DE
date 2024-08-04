@@ -8,10 +8,14 @@ services:
     volumes:  
       - spark-logs:/home/spark_user/spark/spark-events
       - W4M2:/home/spark_user/code
+      - namenode:/home/hduser/data
     ports:
       - '8080:8080'
       - '7077:7077'
       - '8888:8888'
+      - "9870:9870"
+      - "8088:8088"
+      - "4040:4040"
     networks:
       - spark
 
@@ -24,6 +28,7 @@ services:
       - spark-master
     volumes:
       - spark-logs:/home/spark_user/spark/spark-events
+      - datanode0:/home/hduser/data
     ports:
       - '18080:18080'
     networks:
@@ -38,6 +43,8 @@ services:
       - spark-master
     volumes:
       - spark-logs:/home/spark_user/spark/spark-events
+      - datanode1:/home/hduser/data
+
     ports:
       - '11111:8081'
     networks:
@@ -52,6 +59,8 @@ services:
       - spark-master
     volumes:
       - spark-logs:/home/spark_user/spark/spark-events
+      - datanode2:/home/hduser/data
+
     ports:
       - '22222:8081'
     networks:
@@ -60,6 +69,11 @@ services:
 volumes:
   spark-logs:
   W4M2:
+  namenode:
+  datanode0:
+  datanode1:
+  datanode2:
+
 networks:
   spark:
     driver: bridge
