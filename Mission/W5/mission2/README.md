@@ -39,6 +39,11 @@ spark = SparkSession.builder \
 ## Optimization
 - 최적화를 위해서는 큰 비용이 드는 연산을 줄여야 한다. Wide transform 연산들이 대표적으로 비용이 큰 연산들이고, 이를 줄이는 것이 stage의 수를 줄이는 것과 같다.
 - 또 다른 방법은, 자주 사용하는 dataframe을 caching 해두는 것이다. 이를 통해 동일한 연산을 반복적으로 수행하는 것을 피할 수 있다.
+- Spark Web UI에서, 기존의 연산결과를 이용하는 경우 DAG에서 회색으로 skipped라고 표현한다.
+
+## Lazy Evaluation
+- Spark에서, transformation은 action이 호출되기 전까지는 실제로 수행되지 않는다. 이를 laze evaluation이라 부른다.
+- 그 예로, dataframe에서 존재하지 않는 Column을 select(transformation 연산 중 하나) 하더라도, action을 호출하기 전까지는 error가 발생하지 않는다.
 
 ## DAG
 ### All Jobs
