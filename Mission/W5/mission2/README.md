@@ -29,7 +29,6 @@ spark = SparkSession.builder \
     .getOrCreate()
 ```
 
-
 ### Spark Web UI
 <img width="1704" alt="spark-master" src="https://github.com/user-attachments/assets/72d3ad11-dfbb-47ab-be58-9fe4b179ef3d">
 
