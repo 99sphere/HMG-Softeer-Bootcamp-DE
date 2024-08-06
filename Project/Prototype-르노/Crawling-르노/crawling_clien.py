@@ -157,7 +157,7 @@ if __name__=="__main__":
             contents.append(content)
             likes.append(like_cnt)
             views.append(view_cnt)
-            print(f"title: {titles[post_idx]}\nnumber of comments: {cmt_cnt}" )
+            # print(f"title: {titles[post_idx]}\nnumber of comments: {cmt_cnt}" )
 
         # Save to posts.csv 
         if end_idx != -1:
