@@ -59,7 +59,13 @@ def save_dict_to_csv(data, fp):
 def per_post_crawling(driver):
     # per post
     # get post_id
-    meta_tag = driver.find_element(By.CSS_SELECTOR, 'meta[property="url"]')    
+    try: # "잘못된 접근입니다."
+        meta_tag = driver.find_element(By.CSS_SELECTOR, 'meta[property="url"]')    
+        read = 1
+    except:
+        read = 0
+        return read, None, None, None, None, None, None, None
+    
     url_value = meta_tag.get_attribute('content')
     match = re.search(r'/(\d+)$', url_value)
     post_id = int(match.group(1))
@@ -127,7 +133,8 @@ def per_post_crawling(driver):
         cmt_updated_ats.append(cmt_updated_at)
         cmt_post_ids.append(post_id)
     
-    return content, like_cnt, view_cnt, cmt_authors, cmt_contents, cmt_post_ids, cmt_created_ats, cmt_updated_ats, cmt_cnt, post_id, updated_at
+    comment_data = {"post_id": cmt_post_ids, "cmt_content": cmt_contents, "cmt_author": cmt_authors, "cmt_created_at": cmt_created_ats, "cmt_updated_at": cmt_updated_ats}
+    return read, comment_data, cmt_cnt, post_id, updated_at, content, like_cnt, view_cnt
 
 
 if __name__=="__main__":
@@ -140,10 +147,10 @@ if __name__=="__main__":
     # post_file_name='clien-르노-posts.csv'
     # comments_file_name='clien-르노-comments.csv'
     
-    datetime_start='2024-06-29 00:00:00'
-    datetime_end='2024-07-29 23:59:59'
-    post_file_name='clien-홍명보-posts.csv'
-    comments_file_name='clien-홍명보-comments.csv'
+    datetime_start='2024-08-04 00:00:00'
+    datetime_end='2024-08-06 23:59:59'
+    post_file_name='clien-코나-posts.csv'
+    comments_file_name='clien-코나-comments.csv'
     
     post_fp = output_dir + post_file_name
     comment_fp = output_dir + comments_file_name
@@ -156,60 +163,55 @@ if __name__=="__main__":
         # search_board_url = f'https://www.clien.net/service/search?q=%EB%A5%B4%EB%85%B8&sort=recency&p={page_num}&boardCd=&isBoard=false'
         
         # 홍명보
-        search_board_url = f'https://www.clien.net/service/search?q=%ED%99%8D%EB%AA%85%EB%B3%B4&sort=recency&p={page_num}&boardCd=&isBoard=false'
+        # search_board_url = f'https://www.clien.net/service/search?q=%ED%99%8D%EB%AA%85%EB%B3%B4&sort=recency&p={page_num}&boardCd=&isBoard=false'
+        
+        # 코나
+        search_board_url = f'https://www.clien.net/service/search?q=%EC%BD%94%EB%82%98%20%ED%99%94%EC%9E%AC&sort=recency&p={page_num}&boardCd=&isBoard=false'
+        
         driver = open_url(driver, search_board_url)
-        titles, urls, created_ats, authors, posts_cnt = search_board_crawling(driver)
+        board_titles, board_urls, board_created_ats, board_authors, board_posts_cnt = search_board_crawling(driver)
+        titles = []
+        urls = []
+        created_ats = []
+        authors = []
         updated_ats = []
         contents = []
         likes = []
         views = []
         post_ids = []
-        end_idx = -1
-        start_idx = -1
-           
-        for post_idx in range(len(titles)):
-            if (not in_range(created_ats[post_idx], datetime_start, datetime_end)) and not started: # 코드 시작 후 원하는 범위에 포함되지 않는 게시물들 pass
+                   
+        for post_idx in range(len(board_titles)):
+            if (not in_range(board_created_ats[post_idx], datetime_start, datetime_end)) and not started: # 코드 시작 후 원하는 범위에 포함되지 않는 게시물들 pass
                 continue
-            if started==True and created_ats[post_idx] < datetime_start: # 범위에 해당하는 모든 post를 확인한 경우, while문 종료
+            if started==True and board_created_ats[post_idx] < datetime_start: # 범위에 해당하는 모든 post를 확인한 경우, while문 종료
                 end=True
-                end_idx = post_idx
                 break
-            if (in_range(created_ats[post_idx], datetime_start, datetime_end)) and not started: # 처음 시작하는 경우
+            if (in_range(board_created_ats[post_idx], datetime_start, datetime_end)) and not started: # 처음 시작하는 경우
                 started = True
-                start_idx = post_idx
-            if start_idx == -1:
-                start_idx = 0
-            post_url = urls[post_idx]
-            driver = open_url(driver, post_url)
-            content, like_cnt, view_cnt, cmt_authors, cmt_contents, cmt_post_ids, cmt_created_ats, cmt_updated_ats, cmt_cnt, post_id, updated_at = per_post_crawling(driver)
 
+            post_url = board_urls[post_idx]
+            driver = open_url(driver, post_url)
+            read, comment_data, cmt_cnt, post_id, updated_at, content, like_cnt, view_cnt = per_post_crawling(driver)
+            
+            if not read: # board에 존재하지만, 접근할 수 없는 게시물인 경우
+                continue
             # Save to comments.csv
-            comment_data = {"post_id": cmt_post_ids, "cmt_content": cmt_contents, "cmt_author": cmt_authors, "cmt_created_at": cmt_created_ats, "cmt_updated_at": cmt_updated_ats}
             save_dict_to_csv(comment_data, comment_fp)
 
             post_ids.append(post_id)
+            titles.append(board_titles[post_idx])
             contents.append(content)
             likes.append(like_cnt)
+            urls.append(post_url)
+            authors.append(board_authors[post_idx])
             views.append(view_cnt)
+            created_ats.append(board_created_ats[post_idx])
             updated_ats.append(updated_at)
-            print(f"title: {titles[post_idx]}\nnumber of comments: {cmt_cnt}" )
-
-        # Save to posts.csv 
-        if end_idx != -1:
-            titles = titles[start_idx:end_idx]
-            urls = urls[start_idx:end_idx]
-            created_ats = created_ats[start_idx:end_idx]
-            authors = authors[start_idx:end_idx]
-        elif start_idx == -1 and end_idx == -1:
-            titles, urls, created_ats, authors = [], [], [], []
-        else:
-            titles = titles[start_idx:]
-            urls = urls[start_idx:]
-            created_ats = created_ats[start_idx:]
-            authors = authors[start_idx:]
-                    
+        
+            print(f"title: {board_titles[post_idx]}\nnumber of comments: {cmt_cnt}")
+                   
         post_data = {"id": post_ids, "title": titles, 'content': contents, 'likes': likes, 'url': urls, \
-            'author': authors, 'views': views, "created_at": created_ats, "updated_at": updated_ats}
+            'author': authors, 'views': views, "created_at": created_ats, "updated_at": updated_ats}        
         save_dict_to_csv(post_data, post_fp)
         page_num += 1
     driver.quit()
