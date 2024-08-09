@@ -16,7 +16,7 @@ from selenium.webdriver.common.keys import Keys
 # Naver login url / your id / your passward
 url='https://nid.naver.com/nidlogin.login'
 id_ = 'hmg_de'
-pw = 'hmg_dehmg_de'
+pw = 'hmg_de_hmg_de'
     
 browser = webdriver.Chrome()
 browser.get(url)

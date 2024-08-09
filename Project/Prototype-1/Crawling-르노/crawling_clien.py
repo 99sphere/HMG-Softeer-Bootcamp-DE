@@ -147,8 +147,8 @@ if __name__=="__main__":
     # post_file_name='clien-르노-posts.csv'
     # comments_file_name='clien-르노-comments.csv'
     
-    datetime_start='2024-08-04 00:00:00'
-    datetime_end='2024-08-06 23:59:59'
+    datetime_start='2010-08-04 00:00:00'
+    datetime_end='2030-08-06 23:59:59'
     post_file_name='clien-코나-posts.csv'
     comments_file_name='clien-코나-comments.csv'
     
@@ -156,7 +156,7 @@ if __name__=="__main__":
     comment_fp = output_dir + comments_file_name
     
     driver = webdriver.Chrome()
-    page_num=0
+    page_num=15
     while not end:
         post_idx = 0
         # 르노
