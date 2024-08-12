@@ -3,7 +3,7 @@ import pandas as pd
 
 # 루트 폴더 경로를 지정하세요.
 
-root_folder_path = 'raw_data/naver_cafe/posts'
+root_folder_path = 'raw_data/fmkorea/posts'
 
 
 # 모든 하위 폴더에서 CSV 파일을 찾기
@@ -23,5 +23,5 @@ for csv_file in csv_files:
 combined_df = pd.concat(dfs, ignore_index=True)
 
 # 합친 데이터를 새 CSV 파일로 저장
-output_file = 'data/naver_cafe_post.csv'
+output_file = 'data/fmkorea_post.csv'
 combined_df.to_csv(output_file, index=False)
