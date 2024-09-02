@@ -1,5 +1,4 @@
-# Week 2 (python multiprocessing, AWS)
-
+# Week 2
 ## 1. Python Multi Processing vs Multi Threading
 ### 1.1. Multi Threading
 - 파이썬에서의 multi threading은 C, C++과는 달리 실제로는 parall하게 동작하지 않는다. 

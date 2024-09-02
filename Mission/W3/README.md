@@ -1,4 +1,4 @@
-# Week 3 (Hadoop)
+# Week 3
 ## Hadoop
 ### Hadoop Components
 - HDFS : storage layer

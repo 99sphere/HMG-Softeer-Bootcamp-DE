@@ -1,4 +1,4 @@
-# Week 1 (Pandas, Matplotlib, SQL)
+# Week 1
 ## 1. Environment Setting (venv with Jupyter)
 ### 1.1. venv 가상환경 생성, activate, deactivate
 #### 1.1.1. create virtual env
