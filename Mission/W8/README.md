@@ -64,7 +64,7 @@
 ![image](https://github.com/user-attachments/assets/94c7f170-2375-4266-9ab8-c509e5710d9b)
 - Spark는 spark.sql.adaptive.coalescePartitions.initialPartitionNum 구성을 통해 충분히 큰 initial shuffle partition 수를 설정하면 런타임에 적절한 shuffle partition 수를 선택할 수 있다.
 ![image](https://github.com/user-attachments/assets/73e63873-605b-494c-b2e0-0a34e87fd447)
-![alt text](image.png)
+![image](https://github.com/user-attachments/assets/12d053e8-dc71-41e1-bac6-c9e8dee21dd9)
 
 ### Join Strategy
 - 복잡한 쿼리의 성능에 영향을 미치는 또 다른 요소는 physical join strategy의 선택이다. 실제로 Spark는 세 가지 physical join operator를 구현한다.
