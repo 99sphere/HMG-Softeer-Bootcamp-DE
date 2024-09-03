@@ -126,7 +126,7 @@
 <img width="661" alt="image" src="https://github.com/user-attachments/assets/a78b6833-0330-4e2e-a708-50f812896a11">
 
 ### 20. Filtering Unused Data
-- High-dimensional data로 작업할 때는 computational overhead를 최소화해야 한다. 이를 위해, 필요하지 않은 행이나 열은 제거해야 한다. 계산 복잡성과 메모리 사용량을 줄이는 위한 두 가지 핵심은 early filtering과 column pruning 이다.
+- High-dimensional data로 작업할 때는 computational overhead를 최소화해야 한다. 이를 위해, 필요하지 않은 행이나 열은 제거해야 한다. 계산 복잡성과 메모리 사용량을 줄이기 위한 두 가지 핵심은 early filtering과 column pruning 이다.
     - Early Filtering
         - Filtering 작업은 데이터 처리 파이프라인에서 가능한 한 일찍 적용해야 한다. 이를 통해 이후의 transform에서 처리해야 하는 row가 줄어들어 computational cost와 사용하는 memory resource를 줄일 수 있다.
     - Column Pruning
